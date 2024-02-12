@@ -1,0 +1,4 @@
+build/c/
+build/bin/
+.zig-cache/
+OVMF.fd
