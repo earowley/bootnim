@@ -8,11 +8,12 @@ SRC      = src
 APP      = app.efi
 OUT      = build/bin
 BIN      = $(OUT)/$(APP)
+NIM_LIB  = $(shell nim --verbosity:0 --eval:"import std/os; echo getCurrentCompilerExe().parentDir.parentDir / \"lib\"")
 NIMFLAGS = -d:useMalloc            \
            -d:noSignalHandler      \
            --path:$(UNLIBC)        \
            --path:$(UEFI)          \
-		   --path:$(SRC)           \
+           --path:$(SRC)           \
            --mm:arc                \
            --os:any                \
            --cpu:amd64             \
@@ -22,17 +23,12 @@ NIMFLAGS = -d:useMalloc            \
 CFLAGS   = -fno-stack-protector    \
            -ffreestanding          \
            -mno-stack-arg-probe
-ZFLAGS   = -o $(BIN)                    \
-		   -I $(NIM_PREFIX)/nim/lib     \
-		   -I $(UNLIBCH)                \
-           --target=x86_64-uefi         \
-		   $(CFLAGS)
+ZFLAGS   = -o $(BIN)               \
+           -I $(NIM_LIB)           \
+           -I $(UNLIBCH)           \
+           --target=x86_64-uefi    \
+           $(CFLAGS)
 NIM_SRC  = src/main.nim
-
-
-ifeq ($(NIM_PREFIX),)
-    $(error The NIM_PREFIX environment variable is required to build)
-endif
 
 
 default: zigcc
