@@ -16,4 +16,3 @@ func makeString*(s: static string): array[s.len + 1, uint16] =
   for i, c in s:
     result[i] = uint16(c)
   result[s.len] = uint16(0)
-

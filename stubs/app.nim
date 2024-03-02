@@ -8,7 +8,6 @@ let fltused {.exportc: "_fltused".}: int = 0
 # Not to be confused with the application code main function.
 proc cMain(argc: cint, argv, env: ptr ptr cchar): cint {.importc: "main", cdecl.}
 
-
 proc EfiMain*(imageHandle: EfiHandle, systemTable: SystemTable): EfiStatus {.exportc, cdecl.} =
   # Setup anything libc needs to run
   gSystemTable = systemTable
@@ -18,7 +17,6 @@ proc EfiMain*(imageHandle: EfiHandle, systemTable: SystemTable): EfiStatus {.exp
   unlcstderr = stderrImpl.unsafeAddr
   result = Success
   discard cMain(0, nil, nil)
-
 
 when isMainModule:
   {.push warning[BareExcept]: off.}

@@ -4,9 +4,7 @@ import ./core
 import ./protocols/pciio
 export pciio
 
-
 var allDevices = none(seq[PciIOProtocol])
-
 
 proc cmpDevices(a, b: PciIOProtocol): int =
   let ai = a.uid
@@ -17,13 +15,11 @@ proc cmpDevices(a, b: PciIOProtocol): int =
     return -1
   return 0
 
-
 proc initAllDevices: lent seq[PciIOProtocol] =
   var tmp = protocols(PciIOProtocol)
   sort(tmp, cmpDevices)
   allDevices = some(tmp)
   return allDevices.get()
-
 
 proc fetchAllDevices*: lent seq[PciIOProtocol] =
   if allDevices.isSome:

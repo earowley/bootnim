@@ -1,7 +1,6 @@
 import std/strformat
 import ../common
 
-
 # The GUID for the PCI-I/O protocol.
 let PciIOProtocolGuid* {.align(8).} = Guid(
   timeLow: 0x4cf5b200,
@@ -11,7 +10,6 @@ let PciIOProtocolGuid* {.align(8).} = Guid(
   clockSeqLow: 0xec,
   node: [0xb2'u8, 0x3e'u8, 0x3f'u8, 0x50'u8, 0x02'u8, 0x9a'u8]
 )
-
 
 type
   Width {.size: sizeof(cint), pure.} = enum
@@ -59,18 +57,14 @@ type
 
   PciIOProtocol* = ptr PciIOProtocolImpl
 
-
 proc device*(self: PciIOProtocol): uint16 =
   discard self.pci.read(self, Uint16, 0, 1, result.addr)
-
 
 proc vendor*(self: PciIOProtocol): uint16 =
   discard self.pci.read(self, Uint16, 2, 1, result.addr)
 
-
 proc uid*(self: PciIOProtocol): uint32 =
   (self.vendor.uint32 shl 16) or self.device
-
 
 proc `$`*(self: PciIOProtocol): string =
   fmt"PCI Device  ({self.vendor:X}:{self.device:X})"
