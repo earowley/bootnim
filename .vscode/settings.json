@@ -1,3 +1,4 @@
 {
-    "nim.inlayHints.typeHints.enable": false
+    "nim.inlayHints.typeHints.enable": false,
+    "nim.lintOnSave": false
 }
