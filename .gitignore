@@ -1,3 +1,4 @@
+.vscode/
 build/c/
 build/bin/
 .zig-cache/

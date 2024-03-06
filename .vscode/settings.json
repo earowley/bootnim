@@ -1,5 +1,0 @@
-{
-    "nim.inlayHints.typeHints.enable": false,
-    "nim.lintOnSave": false,
-    "nim.notificationVerbosity": "warning"
-}
