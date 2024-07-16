@@ -6,9 +6,9 @@
 
 ## Build Requirements
 
-* Latest Nim compiler
-* Latest Zig compiler
-  * Any C compiler can be substituted
+* Nim 2.0+
+* Zig 0.13.0
+  * Any C compiler can be substituted, but Zig has both a UEFI target and out-of-the-box cross-compilation
 
 ## Hello World
 
@@ -30,7 +30,7 @@ proc main* =
 # Creates .efi binary under build/bin
 $ make
 # Creates .efi binary and launches QEMU
-$ make qemu
+$ make run
 ```
 
 ![Demo Gif](./demo.gif)
