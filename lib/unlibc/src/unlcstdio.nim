@@ -37,7 +37,7 @@ proc flush(writer: var StdoutWriter) =
     return
   writer.doFlush()
 
-proc unlcfwrite(data: pointer, size, count: csize_t, handle: pointer): csize_t {.exportc: "fwrite".} =
+proc unlcfwrite(data: pointer, size, count: csize_t, handle: pointer): csize_t {.exportc: "fwrite", cdecl.} =
   let file = cast[ptr File](handle)
 
   if file.fd == 0 or file.fd > 2:
@@ -58,7 +58,7 @@ proc unlcfwrite(data: pointer, size, count: csize_t, handle: pointer): csize_t {
 
   return bytesToWrite
 
-proc unlcfgets(s: ptr cchar, count: cint, handle: pointer): ptr cchar {.exportc: "fgets".} =
+proc unlcfgets(s: ptr cchar, count: cint, handle: pointer): ptr cchar {.exportc: "fgets", cdecl.} =
   let file = cast[ptr File](handle)
 
   if file.fd != 0:
@@ -91,11 +91,11 @@ proc unlcfgets(s: ptr cchar, count: cint, handle: pointer): ptr cchar {.exportc:
 
   s[i] = cchar(0)
 
-func unlcfflush(f: pointer): cint {.exportc: "fflush".} = 0
-func unlcferror(f: pointer): cint {.exportc: "ferror".} = 0
-func unlcclearerr(f: pointer) {.exportc: "clearerr".} = discard
+func unlcfflush(f: pointer): cint {.exportc: "fflush", cdecl.} = 0
+func unlcferror(f: pointer): cint {.exportc: "ferror", cdecl.} = 0
+func unlcclearerr(f: pointer) {.exportc: "clearerr", cdecl.} = discard
  
-proc unlcsprintf(buffer, fmt: ptr cchar): cint {.exportc: "sprintf", varargs.} =
+proc unlcsprintf(buffer, fmt: ptr cchar): cint {.exportc: "sprintf", varargs, cdecl.} =
   var i = 0
   let s = fmt.raw
   {.emit: """

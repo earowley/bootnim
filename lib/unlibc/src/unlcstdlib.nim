@@ -4,11 +4,11 @@ proc getAllocationSize(p: pointer): csize_t =
 proc setAllocationSize(p: pointer, size: csize_t) =
   cast[ptr csize_t](p)[-1] = size
 
-proc unlcfree(p: pointer) {.exportc: "free".} =
+proc unlcfree(p: pointer) {.exportc: "free", cdecl.} =
   let ogPtr = cast[pointer](cast[uint](p) - uint(sizeof(uint)))
   gSystemTable.bootServices.free(ogPtr)
 
-proc unlcmalloc(size: csize_t): pointer {.exportc: "malloc".} =
+proc unlcmalloc(size: csize_t): pointer {.exportc: "malloc", cdecl.} =
   result = gSystemTable.bootServices.alloc(uint(size) + uint(sizeof(uint)))
 
   if result == nil:
@@ -17,14 +17,14 @@ proc unlcmalloc(size: csize_t): pointer {.exportc: "malloc".} =
   result = cast[pointer](cast[uint](result) + uint(sizeof(uint)))
   setAllocationSize(result, size)
 
-proc unlccalloc(num, size: csize_t): pointer {.exportc: "calloc".} =
+proc unlccalloc(num, size: csize_t): pointer {.exportc: "calloc", cdecl.} =
   let allocSize = num * size
   result = unlcmalloc(allocSize)
 
   if result != nil:
     discard unlcmemset(result, 0, allocSize)
 
-proc unlcrealloc(p: pointer, size: csize_t): pointer {.exportc: "realloc".} =
+proc unlcrealloc(p: pointer, size: csize_t): pointer {.exportc: "realloc", cdecl.} =
   let currentSize = getAllocationSize(p)
 
   if size <= currentSize:
@@ -41,5 +41,5 @@ proc unlcrealloc(p: pointer, size: csize_t): pointer {.exportc: "realloc".} =
 
   unlcfree(p)
 
-proc unlcexit(status: cint) {.exportc: "exit", noreturn.} =
+proc unlcexit(status: cint) {.exportc: "exit", noreturn, cdecl.} =
   exit(EfiStatus(status))
