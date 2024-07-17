@@ -8,9 +8,31 @@
 
 * Nim 2.0+
 * Zig 0.13.0
-  * Any C compiler can be substituted, but Zig has both a UEFI target and out-of-the-box cross-compilation
+  * Any C compiler can be substituted but Zig is lightweight, comes with a UEFI target, and includes out-of-the-box cross-compilation
 
-## Hello World
+## Initial Setup
+
+### MacOS
+
+In MacOS you can install the build dependencies with brew, for example:
+
+```bash
+$ brew install nim zig
+```
+
+### Arch Linux
+
+In Arch Linux, you can use pacman, for example:
+
+```bash
+$ pacman -S nim zig
+```
+
+### Windows
+
+See installation details for [zig](https://ziglang.org/download/) and [nim](https://nim-lang.org/install_windows.html), and make sure they are added to your PATH
+
+## Building
 
 1. Install the build requirements
 2. Clone this repository
