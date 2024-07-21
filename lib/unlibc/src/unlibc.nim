@@ -1,7 +1,6 @@
 {.emit: "#include <stdarg.h>".}
 
-import efi/core
-import efi/protocols/simpletextoutput
+import uefi
 include helpers
 include unlcmath
 include helpers/math

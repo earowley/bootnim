@@ -1,7 +1,5 @@
-import efi/pci
+import uefi
 
 proc main* =
-  echo "Iterating over PCI/IO protocols..."
-  let ps = fetchAllDevices()
-  for p in ps:
-    echo p
+  echo gSystemTable.header
+  echo "Hello, UEFI world!"

@@ -1,8 +1,7 @@
-import std/options
-import std/algorithm
-import ./core
-import ./protocols/pciio
-export pciio
+import
+  std/options,
+  std/algorithm,
+  ./protocols
 
 var allDevices = none(seq[PciIOProtocol])
 

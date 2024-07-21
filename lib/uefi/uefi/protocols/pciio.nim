@@ -1,8 +1,11 @@
-import std/strformat
-import ../common
+import
+  std/strformat,
+  ../common
+export
+  common
 
 # The GUID for the PCI-I/O protocol.
-let PciIOProtocolGuid* {.align(8).} = Guid(
+let PciIoProtocolGuid* {.align(8).} = Guid(
   timeLow: 0x4cf5b200,
   timeMid: 0x68b8,
   timeHighAndVersion: 0x4ca5,
@@ -12,23 +15,8 @@ let PciIOProtocolGuid* {.align(8).} = Guid(
 )
 
 type
-  Width {.size: sizeof(cint), pure.} = enum
-    Uint8
-    Uint16
-    Uint32
-    Uint64
-    FifoUint8
-    FifoUint16
-    FifoUint32
-    FifoUint64
-    FillUint8
-    FillUint16
-    FillUint32
-    FillUint64
-    Maximum
-
-  ConfigAccess = proc (this: PciIOProtocol, width: Width, offset: uint32, count: uint, buffer: pointer): EfiStatus {.cdecl.}
-  MemoryAccess = proc (this: PciIOProtocol, width: Width, bar: uint8, offset: uint32, count: uint, buffer: pointer): EfiStatus {.cdecl.}
+  ConfigAccess = proc (self: PciIoProtocol, width: EfiPciIoWidth, offset: uint32, count: uint, buffer: pointer): EfiStatus {.cdecl.}
+  MemoryAccess = proc (self: PciIoProtocol, width: EfiPciIoWidth, bar: uint8, offset: uint32, count: uint, buffer: pointer): EfiStatus {.cdecl.}
 
   ConfigRW {.byCopy.} = object
     read, write: ConfigAccess
@@ -36,7 +24,7 @@ type
   MemoryRW {.byCopy.} = object
     read, write: MemoryAccess
 
-  PciIOProtocolImpl {.byCopy.} = object
+  PciIoProtocolObj {.byCopy.} = object
     pollMem: pointer
     pollIO: pointer
     mem: MemoryRW
@@ -54,17 +42,16 @@ type
     setBarAttributes: pointer
     romSize: uint64
     romImage: pointer
+  PciIoProtocol* = ptr PciIoProtocolObj
 
-  PciIOProtocol* = ptr PciIOProtocolImpl
-
-proc device*(self: PciIOProtocol): uint16 =
+proc device*(self: PciIoProtocol): uint16 =
   discard self.pci.read(self, Uint16, 0, 1, result.addr)
 
-proc vendor*(self: PciIOProtocol): uint16 =
+proc vendor*(self: PciIoProtocol): uint16 =
   discard self.pci.read(self, Uint16, 2, 1, result.addr)
 
-proc uid*(self: PciIOProtocol): uint32 =
+proc uid*(self: PciIoProtocol): uint32 =
   (self.vendor.uint32 shl 16) or self.device
 
-proc `$`*(self: PciIOProtocol): string =
+proc `$`*(self: PciIoProtocol): string =
   fmt"PCI Device  ({self.vendor:X}:{self.device:X})"
