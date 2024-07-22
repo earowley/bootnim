@@ -8,8 +8,6 @@ type
     buffer: array[WriterBufLen + 1, uint16]
     index: uint
 
-  ValidWriterCharacter = uint8 | cchar | char
-
 const
   stdinImpl = File(fd: 0)
   stdoutImpl = File(fd: 1)
@@ -25,8 +23,8 @@ proc doFlush(writer: var StdoutWriter) =
   gSystemTable.conOut.writeString(writer.buffer)
   writer.index = 0
 
-proc add(writer: var StdoutWriter, c: ValidWriterCharacter) =
-  writer.buffer[writer.index] = uint16(c)
+proc add(writer: var StdoutWriter, ucs: uint16) =
+  writer.buffer[writer.index] = ucs
   inc writer.index
 
   if writer.index == WriterBufLen:
@@ -43,16 +41,24 @@ proc unlcfwrite(data: pointer, size, count: csize_t, handle: pointer): csize_t {
   if file.fd == 0 or file.fd > 2:
     return 0
 
-  let p = cast[ptr char](data)
-  let bytesToWrite = size * count
-  var writer: StdoutWriter
-
+  let
+    p = cast[ptr char](data)
+    bytesToWrite = size * count
+  var
+    writer: StdoutWriter
+    buf: string
+  
   for i in 0..<bytesToWrite:
-    let c = p[i]
+    buf.add(char(p[i]))
 
-    if c == '\n':
-      writer.add('\r')
-    writer.add(c)
+  for rune in runes(buf):
+    let val = int32(rune)
+    if val >= 0xD800:
+      writer.add(uint16('?'))
+      continue
+    if val == int32('\n'):
+      writer.add(uint16('\r'))
+    writer.add(uint16(val))
 
   writer.flush()
 

@@ -47,10 +47,10 @@ type
     locateHandle: pointer
     locateDevicePath: pointer
     installConfigurationTable: pointer
-    loadImage: pointer
+    loadImage: EfiImageUnload
     startImage: pointer
     exit: Exit
-    unloadImage: pointer
+    unloadImage: EfiImageUnload
     exitBootServices: pointer
     getNextMonotonicCount: pointer
     stall: pointer
@@ -71,7 +71,7 @@ type
     createEventEx: pointer
   BootServicesTable* = ptr BootServicesTableObj
 
-# Use the protocols proc in the uefi module instead.
+# Use the protocols proc in the `uefi` module instead.
 proc protocolsByGuid*(self: BootServicesTable, guid: ptr Guid, handle: EfiHandle): seq[pointer] =
   var buffer: ptr UncheckedArray[EfiHandle]
   var size: uint
@@ -86,9 +86,34 @@ proc protocolsByGuid*(self: BootServicesTable, guid: ptr Guid, handle: EfiHandle
   result = newSeqOfCap[pointer](size)
 
   for i in 0..<size:
-    if self.openProtocol(buffer[i], guid, p.addr, handle, cast[EfiHandle](nil), {opGetProtocol}) != Success:
+    if self.openProtocol(
+      buffer[i],
+      guid,
+      p.addr,
+      handle,
+      cast[EfiHandle](nil),
+      { opGetProtocol }
+    ) != Success:
       continue
     result.add(p)
+
+# Gets a protocol with the specified `guid` that is installed on `handle` using
+# the specified `agent` handle. If the protocol is not installed on `handle`, nil
+# is returned.
+proc getProtocol*(
+  self: BootServicesTable;
+  guid: ptr Guid;
+  handle, agent: EfiHandle
+): pointer =
+  if self.openProtocol(
+    handle,
+    guid,
+    result.addr,
+    agent,
+    cast[EfiHandle](nil),
+    { opGetProtocol }
+  ) != Success:
+    return nil
 
 # Wait for the specified event.
 proc waitForEvent*(self: BootServicesTable, event: EfiEvent) =

@@ -1,3 +1,6 @@
+import std/enumerate
+from std/unicode import runes, runeLen
+
 type
   EfiHandle* = distinct pointer
   EfiEvent* = distinct EfiHandle
@@ -40,14 +43,19 @@ type
     crc32*: uint32
     reserved: uint32
 
-func uefiString(s: static string): array[s.len + 1, uint16] =
-  for i, c in s:
-    result[i] = uint16(c)
-  result[s.len] = uint16(0)
+  EfiImageUnload* = proc (img: EfiHandle): EfiStatus {.cdecl.}
 
-# Convert a static string literal to a UEFI "wide string". Only supports
-# ASCII strings, and does not convert from UTF-8 to UTF-16.
-template `w`*(s: static string): untyped =
+func uefiString(s: static string): array[runeLen(s) + 1, uint16] =
+  for i, rune in enumerate(runes(s)):
+    # Rune's backing store is int32
+    if int32(rune) < 0xD800:
+      result[i] = uint16(rune)
+    else:
+      result[i] = uint16('?')
+  result[s.runeLen] = uint16(0)
+
+# Convert a static string literal to a UCS-2 wide string.
+template `L`*(s: static string): untyped =
   const result = uefiString(s)
   result
 

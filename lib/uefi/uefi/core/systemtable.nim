@@ -31,7 +31,7 @@ proc bootServices*(self: SystemTable): BootServicesTable =
 
   # Can't throw an exception here because boot services are not available,
   # and any allocations will fail
-  var err = w"Tried to access BS table after exiting boot services"
+  var err = L"Tried to access BS table after exiting boot services"
   self.conOut.writeString(err)
 
   while true:

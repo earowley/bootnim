@@ -1,5 +1,6 @@
 {.emit: "#include <stdarg.h>".}
 
+from std/unicode import runes
 import uefi
 include helpers
 include unlcmath
