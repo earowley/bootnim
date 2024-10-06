@@ -47,12 +47,12 @@ $ git clone https://github.com/earowley/bootnim && cd bootnim
 proc main* =
     echo "Hello world"
 ```
-5. Run desired make target
+5. Run desired nimble build
 ```bash
 # Creates .efi binary under build/bin
-$ make
+$ nimble build
 # Creates .efi binary and launches QEMU
-$ make run
+$ nimble qemu
 ```
 
 ![Demo Gif](./demo.gif)
